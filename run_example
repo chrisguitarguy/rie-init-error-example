@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+docker build --tag "rie-init-error-test:latest" .
+
+containerId=$(docker run --rm -p 9000:8080 --detach "rie-init-error-test" ignored.handler)
+echo $containerId
+sleep 2
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"event": true}'
+docker logs "$containerId"
+docker stop "$containerId"
